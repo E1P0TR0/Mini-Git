@@ -32,6 +32,8 @@ public:
 
     void registerUser();
     void loginUser();
+
+    
 };
 
 Menu::Menu()
@@ -66,9 +68,10 @@ void Menu::mainMenu()
         {
         case '1':
             // Iniciar sesión
-            std::cout << "Se inicio sesion\n";
+            loginUser();
             break;
         case '2':
+            // Registrarse 
             registerUser();
             break;
         case '3':
@@ -78,18 +81,19 @@ void Menu::mainMenu()
             std::cerr << "Opcion invalida\n\n";
             break;
         }
-        system("pause");
+        //system("pause>0");
     } while (option != '3');
     
 }
 
 void Menu::registerUser()
 {
-    std::string _name = "", _passw = "";
+    std::string _name = "", _passw = "", _email = "";
 
     // Para verificar diferentes usuarios
-    bool anotherUser = false;
-
+    bool anotherUser = true;
+    char exitKey = '\0';
+    
     do
     {
         system("cls");
@@ -99,20 +103,36 @@ void Menu::registerUser()
         getline(std::cin, _name);
         std::cout << "\n\tConstrasena: ";
         getline(std::cin, _passw);
+        std::cout << "\n\tCorreo: ";
+        getline(std::cin, _email);
 
-        User* newUser = new User(_name, _passw);
-        usersFile->writeFile(newUser->getName(), newUser->getPassword());
 
-    } while (anotherUser);
-    
+        if(_name != "\0" && _passw != "\0" && _email != "\0")
+            if(!usersFile->loadFile(_name, _passw)) // usuario no existente
+            {
+                User* newUser = new User(_name, _passw, _email);
+                usersFile->writeFile(newUser->getName(), newUser->getPassword(), newUser->getEmail());
+                usersFile->createUserFolder(newUser->getName());
+                anotherUser = false;
+            }
+            else   
+                std::cout << "\t\t\nUsuario existente!\n\n";
+        else    
+            std::cout << "\t\t\nDatos invalidos, Vuelva a intentarlo...\n\n";
+
+        std::cin.ignore();
+
+        std::cout << "\n3) Volver.\n";
+    } while (anotherUser || (exitKey = getch()) != '3');
 }
 
-// falta implementar y corregir
 void Menu::loginUser()
 {
     std::string _name = "", _password = "";
     
     char keyPressed = '\0';
+    char exitKey = '\0';
+
 
     unsigned int accountant = 0;
     bool valid = false;
@@ -124,9 +144,9 @@ void Menu::loginUser()
         std::cout << "\t\t\t----------------\n";
         std::cout << "\n\tUsuario: ";
 
-        getline(std::cin, _name);
+        std::getline(std::cin, _name);
 
-        std::cout << "\tPassword: ";
+        std::cout << "\n\tPassword: ";
         keyPressed = _getch();
 
         _password = "";
@@ -151,11 +171,11 @@ void Menu::loginUser()
 
         // Validar datos en archivo .txt
 
-        // if (usuarios[i] == _name && claves[i] == _password)
-        // {
-        //     valid = true;
-        //     break;
-        // }
+        if (usersFile->loadFile(_name, _password))
+        {
+            valid = true;
+            break;
+        }
 
         if(!valid)
         {
@@ -164,7 +184,11 @@ void Menu::loginUser()
             accountant++;
         }
 
+        std::cout << "\n3) Volver.\n";
+        if((exitKey = getch()) == '3') return;
+
     } while(valid == false && accountant < INTENTOS);
+
 
     if(valid == false)
         std::cout << "\n\tUsted no pudo ingresar al sistema. ADIOS" << std::endl;
