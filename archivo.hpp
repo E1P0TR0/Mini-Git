@@ -1,7 +1,7 @@
 #ifndef __ARCHIVO_HPP__
 #define __ARCHIVO_HPP__
 
-#define FILE_NAME "Users.txt"
+#define FILE_NAME "c:/Cuentas/Users.txt"
 #define GEN_FOLDER_NAME "c:/Cuentas"
 
 #define MSG_ERROR "\t\nERROR AL ABRIR EL ARCHIVO!!\n\n"
@@ -11,6 +11,8 @@
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
+
+#include "listaEnlazada.hpp"
 
 class File
 {
@@ -22,12 +24,14 @@ public:
     File();
     ~File();
     void writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser);
-    bool loadFile(std::string _nameUser, std::string _passwUser);
+    bool loadFile(LinkedList<User*>* _list);
 
     // crear archivo como almacen para cada carpeta de usuario
     void createGeneralFolder();
-
+    // folder unico cuando se registra cada usuario
     void createUserFolder(std::string name);
+    // carpetas cuando se inicializa el reporsitorio
+    void createInitUserFolder(std::string name);
 
 };
 
@@ -37,7 +41,7 @@ File::File()
     // std::ofstream outFile(FILE_NAME, std::ios::out | std::ios::app);
     // std::ofstream intFile(FILE_NAME, std::ios::in );
 
-    createGeneralFolder();
+    createGeneralFolder(); // crea folder en C donde se almacenara todoas las carpetas de usuarios
 }
 
 void File::writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser)
@@ -54,16 +58,18 @@ void File::writeFile(std::string _nameUser, std::string _passwUser, std::string 
     outFile.close();
 }
 
-// o mejor dicho para validar
-bool File::loadFile(std::string _nameUser, std::string _passwUser)
+// validar información de archivo
+bool File::loadFile(LinkedList<User*>* _list)
 {
-    std::string cheapName = "", cheapPassw = "";
+    std::string cheapName = "", cheapPassw = "", cheapEmail = "";
     std::string infoLine = "", infoPart = "";
 
     std::ifstream inFile(FILE_NAME, std::ios::in);
 
     bool valid = false; 
 
+    if(!inFile.is_open()) return false;
+    
     if(inFile.fail())
         std::cerr << MSG_ERROR;
     else
@@ -75,14 +81,22 @@ bool File::loadFile(std::string _nameUser, std::string _passwUser)
             cheapName = infoPart;
             std::getline(data, infoPart, '-');
             cheapPassw = infoPart;
+            std::getline(data, infoPart, '-');
+            cheapEmail = infoPart;
 
-            if(cheapName == _nameUser && cheapPassw == _passwUser)
-                return true;
+            User* user = new User(cheapName, cheapPassw, cheapEmail);
+
+            _list->addFinal(user);
+            
+            if(cheapName == _nameUser || cheapPassw == _passwUser)
+                return !valid;
         }
     }
-    return false;
+    inFile.close();
+    return valid;
 }
 
+// quizas mejor en otra clase (USUARIO)
 void File::createGeneralFolder() { mkdir(GEN_FOLDER_NAME); }
 
 void File::createUserFolder(std::string name) 
@@ -91,10 +105,16 @@ void File::createUserFolder(std::string name)
     mkdir(pathFolder.c_str());
     std::string pathRepository = pathFolder + "/" + "Repositorio Local";
     mkdir(pathRepository.c_str());
+}
+
+void File::createInitUserFolder(std::string name)
+{
+    std::string pathFolder = GEN_FOLDER_NAME "/" + name;
     std::string pathStatingArea = pathFolder + "/" + "Area de preparacion";
     mkdir(pathStatingArea.c_str());
     std::string pathWorkPlace = pathFolder + "/" + "Area de Trabajo";
     mkdir(pathWorkPlace.c_str());
 }
+
 
 #endif
