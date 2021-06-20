@@ -15,30 +15,51 @@
 #include "usuario.hpp"
 #include "archivo.hpp"
 
+#include "listaEnlazada.hpp"
+
 #include <iostream>
 #include <iomanip>
 #include <conio.h>
+
+    
+auto existUser = [](LinkedList<User*>* _list, std::string _name, std::string _passw)
+{
+    bool exist = true;
+    for(LinkedList<User*>::Iterator it = _list->beginIt(); it != _list->endIt(); ++it)
+    {
+        User* currentData = *it;
+        if(currentData->getName() == _name || currentData->getPassword() == _passw)
+            return exist;
+    }
+    return !exist;
+};
 
 class Menu
 {
 private:
     File* usersFile;
+    // Cambiar a templates luego
+    LinkedList<User*>* listUser;
 
 public:
     Menu();
     ~Menu();
-    void menuInterface();
+    void mainMenuInterface();
     void mainMenu();
 
     void registerUser();
     void loginUser();
 
-    
+    void secondMenuInterface(std::string _nameMenu);
+    void secondMenu(User* _user);
 };
 
 Menu::Menu()
 {
     usersFile = new File();
+    listUser = new LinkedList<User*>();
+    usersFile->loadFile(listUser);
+    
 }
 
 Menu::~Menu()
@@ -46,7 +67,7 @@ Menu::~Menu()
     //free(usersFile);
 }
 
-void Menu::menuInterface()
+void Menu::mainMenuInterface()
 {
     system("cls");
     std::cout << " ----------------------MENU--------------------- \n";
@@ -61,7 +82,7 @@ void Menu::mainMenu()
    char option = '\0';
     do
     {
-        menuInterface();
+        mainMenuInterface();
         option = getch();
         system("cls");
         switch (option)
@@ -83,7 +104,48 @@ void Menu::mainMenu()
         }
         //system("pause>0");
     } while (option != '3');
-    
+}
+
+void Menu::secondMenuInterface(std::string _nameMenu)
+{
+    system("cls");
+    std::cout << " ----------------- LOGIN MENU DE " << _nameMenu << " ---------------- \n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "1) Inicializar Repositorio." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "2) Crear archivo." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "3) Clonar archivos." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "4) Menu Principal." << "\t|\n";
+    std::cout << " ------------------------------------------------------- \n";
+}
+
+void Menu::secondMenu(User* _user)
+{
+    char option = '\0';
+    do
+    {
+        secondMenuInterface(_user->getName());
+        option = getch();
+        system("cls");
+        switch (option)
+        {
+        case '1':
+            // Inicializar Repositorio
+            std::cout << "Se inicializo\n";
+            break;
+        case '2':
+            // Crear archivo
+            std::cout << "Se Creo archivo\n";
+            break;
+        case '3':
+            // Clonar
+            std::cout << "Se clono archivo\n";
+            break;
+        case '4': break;
+        default:
+            std::cerr << "Opcion invalida\n\n";
+            break;
+        }
+        //system("pause>0");
+    } while (option != '4');
 }
 
 void Menu::registerUser()
@@ -93,7 +155,8 @@ void Menu::registerUser()
     // Para verificar diferentes usuarios
     bool anotherUser = true;
     char exitKey = '\0';
-    
+
+
     do
     {
         system("cls");
@@ -108,9 +171,10 @@ void Menu::registerUser()
 
 
         if(_name != "\0" && _passw != "\0" && _email != "\0")
-            if(!usersFile->loadFile(_name, _passw)) // usuario no existente
+            if(!existUser(listUser, _name, _passw)) // usuario no existente
             {
                 User* newUser = new User(_name, _passw, _email);
+                listUser->addFinal(newUser);
                 usersFile->writeFile(newUser->getName(), newUser->getPassword(), newUser->getEmail());
                 usersFile->createUserFolder(newUser->getName());
                 anotherUser = false;
@@ -133,6 +197,7 @@ void Menu::loginUser()
     char keyPressed = '\0';
     char exitKey = '\0';
 
+    User* user = new User();
 
     unsigned int accountant = 0;
     bool valid = false;
@@ -170,9 +235,9 @@ void Menu::loginUser()
         }
 
         // Validar datos en archivo .txt
-
-        if (usersFile->loadFile(_name, _password))
+        if(existUser(listUser, _name, _password))
         {
+            user = listUser->getElement(_name);
             valid = true;
             break;
         }
@@ -196,10 +261,12 @@ void Menu::loginUser()
     {
         std::cout << "\n\n\tBienvenido al sistema" << std::endl;
         
-        // Aquí va el código del programa cuando el usuario ingresa sus credenciales correctas
-        
+
+        system("pause>0");
+
+
+        secondMenu(user); 
     }
-    std::cin.get();
 }
 
 #endif

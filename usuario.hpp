@@ -16,7 +16,7 @@ public:
     inline std::string getName() const { return this->name; }
     inline std::string getPassword() const { return this->password; }
     inline std::string getEmail() const { return this->email; }
-
+  
 };
 
 User::~User() {}

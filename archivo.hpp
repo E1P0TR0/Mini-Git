@@ -24,7 +24,7 @@ public:
     File();
     ~File();
     void writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser);
-    bool loadFile(LinkedList<User*>* _list);
+    void loadFile(LinkedList<User*>* _list);
 
     // crear archivo como almacen para cada carpeta de usuario
     void createGeneralFolder();
@@ -59,16 +59,21 @@ void File::writeFile(std::string _nameUser, std::string _passwUser, std::string 
 }
 
 // validar información de archivo
-bool File::loadFile(LinkedList<User*>* _list)
+void File::loadFile(LinkedList<User*>* _list)
 {
     std::string cheapName = "", cheapPassw = "", cheapEmail = "";
     std::string infoLine = "", infoPart = "";
 
     std::ifstream inFile(FILE_NAME, std::ios::in);
 
-    bool valid = false; 
+  
+    auto loadData = [](LinkedList<User*>* _list, std::string _name, std::string _passw, std::string _email)
+    {
+        User* user = new User(_name, _passw, _email); // cargo los datos del archivo a la lista
+        _list->addFinal(user); 
+    };
 
-    if(!inFile.is_open()) return false;
+    if(!inFile.is_open()) return;
     
     if(inFile.fail())
         std::cerr << MSG_ERROR;
@@ -84,16 +89,11 @@ bool File::loadFile(LinkedList<User*>* _list)
             std::getline(data, infoPart, '-');
             cheapEmail = infoPart;
 
-            User* user = new User(cheapName, cheapPassw, cheapEmail);
+            loadData(_list, cheapName, cheapPassw, cheapEmail);
 
-            _list->addFinal(user);
-            
-            if(cheapName == _nameUser || cheapPassw == _passwUser)
-                return !valid;
         }
+        inFile.close();
     }
-    inFile.close();
-    return valid;
 }
 
 // quizas mejor en otra clase (USUARIO)
@@ -115,6 +115,5 @@ void File::createInitUserFolder(std::string name)
     std::string pathWorkPlace = pathFolder + "/" + "Area de Trabajo";
     mkdir(pathWorkPlace.c_str());
 }
-
 
 #endif
