@@ -3,8 +3,6 @@
 
 #include "menu.hpp"
 
-#include <string> // para usuario
-
 class Controller
 {
 private:

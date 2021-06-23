@@ -12,10 +12,7 @@
 
 // --------------------------------------
 
-#include "usuario.hpp"
 #include "archivo.hpp"
-
-#include "listaEnlazada.hpp"
 
 #include <iostream>
 #include <iomanip>
@@ -112,7 +109,7 @@ void Menu::secondMenuInterface(std::string _nameMenu)
     std::cout << " ----------------- LOGIN MENU DE " << _nameMenu << " ---------------- \n";
     std::cout << "|\t\t" << std::left << std::setw(32) << "1) Inicializar Repositorio." << "\t|\n";
     std::cout << "|\t\t" << std::left << std::setw(32) << "2) Crear archivo." << "\t|\n";
-    std::cout << "|\t\t" << std::left << std::setw(32) << "3) Clonar archivos." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "3) Clonar Carpeta." << "\t|\n";
     std::cout << "|\t\t" << std::left << std::setw(32) << "4) Menu Principal." << "\t|\n";
     std::cout << " ------------------------------------------------------- \n";
 }
@@ -261,7 +258,7 @@ void Menu::loginUser()
     {
         std::cout << "\n\n\tBienvenido al sistema" << std::endl;
         
-
+        // Se inicia las principales funciones
         system("pause>0");
 
 

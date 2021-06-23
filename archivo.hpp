@@ -7,12 +7,13 @@
 #define MSG_ERROR "\t\nERROR AL ABRIR EL ARCHIVO!!\n\n"
 #define MSG_VALID "\n\t\t\tSE REGISTRO CORRECTAMENTE\n"
 
-#include <iostream>
+#include <iostream> //
 #include <fstream>
 #include <sstream>
 #include <sys/stat.h>
 
 #include "listaEnlazada.hpp"
+#include "usuario.hpp"
 
 class File
 {

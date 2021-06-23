@@ -1,7 +1,5 @@
 #include "controller.hpp"
 
-#include "listaEnlazada.hpp"
-
 int main()
 {
     Controller* objController = new Controller();
