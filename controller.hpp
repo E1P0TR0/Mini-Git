@@ -2,11 +2,12 @@
 #define __CONTROLLER_HPP__
 
 #include "menu.hpp"
+#include "usuario.hpp"
 
 class Controller
 {
 private:
-    Menu* objMenu;
+    Menu<User>* objMenu;
 
 public:
     Controller(); // por el momento
@@ -16,7 +17,7 @@ public:
 Controller::Controller()
 {
     // Creación de objetos
-    objMenu = new Menu();
+    objMenu = new Menu<User>();
     objMenu->mainMenu();
 }
 

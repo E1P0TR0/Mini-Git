@@ -4,7 +4,6 @@ int main()
 {
     Controller* objController = new Controller();
 
-
     // // Prueba lista
     // LinkedList<User*>* list = new LinkedList<User*>();
     // User* u1 = new User("a", "a", "a");
@@ -15,17 +14,5 @@ int main()
     // list->addFinal(u3);
 
     // list->printList();
-
-    system("pause>0");
     return 0;
 }
-
-// DIAGRAMA DE CLASES (ENTIDADES)
-// DEFINIR REQUISITOS
-// DISEÑO DE INTERFAZ DE USUARIO
-// TIPOS DE DE DATOS ABSTRACTOS
-// SELECCIÓN DE ESTRUCTURAS DE DATOS
-// IMPLEMENTACIÓN DE LAS ESTRUCTURAS
-// DIAGRAMA DE CLASES (COMPONENTES)
-// IMPLEMENTACIÓN DE LAS CLASES ENTIDAD
-// PROTOTIPO APLICACIÓN

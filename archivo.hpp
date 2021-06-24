@@ -7,6 +7,10 @@
 #define MSG_ERROR "\t\nERROR AL ABRIR EL ARCHIVO!!\n\n"
 #define MSG_VALID "\n\t\t\tSE REGISTRO CORRECTAMENTE\n"
 
+#define REPOSITORY "Repositorio_Local"
+#define STATING_AREA "Area_de_Trabajo"
+#define WORKPLACE "Area_de_preparacion"
+
 #include <iostream> //
 #include <fstream>
 #include <sstream>
@@ -15,6 +19,7 @@
 #include "listaEnlazada.hpp"
 #include "usuario.hpp"
 
+template <class T>
 class File
 {
 private:
@@ -25,7 +30,7 @@ public:
     File();
     ~File();
     void writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser);
-    void loadFile(LinkedList<User*>* _list);
+    void loadFile(LinkedList<T*>* _list);
 
     // crear archivo como almacen para cada carpeta de usuario
     void createGeneralFolder();
@@ -33,19 +38,23 @@ public:
     void createUserFolder(std::string name);
     // carpetas cuando se inicializa el reporsitorio
     void createInitUserFolder(std::string name);
-
+    // crear archivo X
+    void createFileUser(T* _user, std::string _nameFile);
+    // clonar carpeta de repositorio local a x ruta
+    void cloneRepository(T* _user, std::string _destinationPath);
 };
 
-File::File()
+template <class T>
+File<T>::File()
 {
     // VERIFICAR POR QUE EL ERROR
     // std::ofstream outFile(FILE_NAME, std::ios::out | std::ios::app);
     // std::ofstream intFile(FILE_NAME, std::ios::in );
-
     createGeneralFolder(); // crea folder en C donde se almacenara todoas las carpetas de usuarios
 }
 
-void File::writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser)
+template <class T>
+void File<T>::writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser)
 {
     std::ofstream outFile(FILE_NAME, std::ios::out | std::ios::app);
     
@@ -60,7 +69,8 @@ void File::writeFile(std::string _nameUser, std::string _passwUser, std::string 
 }
 
 // validar información de archivo
-void File::loadFile(LinkedList<User*>* _list)
+template <class T>
+void File<T>::loadFile(LinkedList<T*>* _list)
 {
     std::string cheapName = "", cheapPassw = "", cheapEmail = "";
     std::string infoLine = "", infoPart = "";
@@ -68,9 +78,9 @@ void File::loadFile(LinkedList<User*>* _list)
     std::ifstream inFile(FILE_NAME, std::ios::in);
 
   
-    auto loadData = [](LinkedList<User*>* _list, std::string _name, std::string _passw, std::string _email)
+    auto loadData = [](LinkedList<T*>* _list, std::string _name, std::string _passw, std::string _email)
     {
-        User* user = new User(_name, _passw, _email); // cargo los datos del archivo a la lista
+        T* user = new T(_name, _passw, _email); // cargo los datos del archivo a la lista
         _list->addFinal(user); 
     };
 
@@ -98,23 +108,53 @@ void File::loadFile(LinkedList<User*>* _list)
 }
 
 // quizas mejor en otra clase (USUARIO)
-void File::createGeneralFolder() { mkdir(GEN_FOLDER_NAME); }
+template <class T>
+void File<T>::createGeneralFolder() { mkdir(GEN_FOLDER_NAME); }
 
-void File::createUserFolder(std::string name) 
+template <class T>
+void File<T>::createUserFolder(std::string name) 
 { 
     std::string pathFolder = GEN_FOLDER_NAME "/" + name;
     mkdir(pathFolder.c_str());
-    std::string pathRepository = pathFolder + "/" + "Repositorio Local";
+    std::string pathRepository = pathFolder + "/" + REPOSITORY;
     mkdir(pathRepository.c_str());
 }
 
-void File::createInitUserFolder(std::string name)
+template <class T>
+void File<T>::createInitUserFolder(std::string name)
 {
     std::string pathFolder = GEN_FOLDER_NAME "/" + name;
-    std::string pathStatingArea = pathFolder + "/" + "Area de preparacion";
+    std::string pathStatingArea = pathFolder + "/" + STATING_AREA;
     mkdir(pathStatingArea.c_str());
-    std::string pathWorkPlace = pathFolder + "/" + "Area de Trabajo";
+    std::string pathWorkPlace = pathFolder + "/" + WORKPLACE;
     mkdir(pathWorkPlace.c_str());
+}
+
+template <class T>
+void File<T>::createFileUser(T* _user, std::string _nameFile)
+{
+    std::string pathFile = GEN_FOLDER_NAME "/" + _user->getName() + "/" + REPOSITORY + "/" + _nameFile + ".txt";
+    std::ofstream outFile(pathFile, std::ios::out | std::ios::app);
+
+    if(outFile.fail())
+        std::cerr << MSG_ERROR;
+    else
+        std::cout << "\nArchivo creado correctamente\n";
+    outFile.close();
+}
+
+// CORREGIR
+template <class T>
+void File<T>::cloneRepository(T* _user, std::string _destPath)
+{
+    // XCOPY c:\Cuentas\rosa c:\Users\Amelia\Desktop /E
+    std::string pathFile = "c:\\Cuentas\\" + _user->getName() + "\\" + REPOSITORY;
+    std::string newDestPath =  _destPath + "\\" + REPOSITORY;
+    mkdir(newDestPath.c_str());
+    std::string command = "XCOPY " + pathFile + " " + newDestPath + " " + "/E" + "/-Y";
+    std::cout << "\n";
+    system(command.c_str());
+    std::cout << "\n\t\tClonacion terminada !\n";
 }
 
 #endif

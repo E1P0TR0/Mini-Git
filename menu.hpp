@@ -18,7 +18,7 @@
 #include <iomanip>
 #include <conio.h>
 
-    
+// problema con templates
 auto existUser = [](LinkedList<User*>* _list, std::string _name, std::string _passw)
 {
     bool exist = true;
@@ -31,12 +31,13 @@ auto existUser = [](LinkedList<User*>* _list, std::string _name, std::string _pa
     return !exist;
 };
 
+template <class T>
 class Menu
 {
 private:
-    File* usersFile;
+    File<T>* usersFile;
     // Cambiar a templates luego
-    LinkedList<User*>* listUser;
+    LinkedList<T*>* listUser;
 
 public:
     Menu();
@@ -48,23 +49,26 @@ public:
     void loginUser();
 
     void secondMenuInterface(std::string _nameMenu);
-    void secondMenu(User* _user);
+    void secondMenu(T* _user);
 };
 
-Menu::Menu()
+template <class T>
+Menu<T>::Menu()
 {
-    usersFile = new File();
-    listUser = new LinkedList<User*>();
+    usersFile = new File<T>();
+    listUser = new LinkedList<T*>();
     usersFile->loadFile(listUser);
     
 }
 
-Menu::~Menu()
+template <class T>
+Menu<T>::~Menu()
 {
     //free(usersFile);
 }
 
-void Menu::mainMenuInterface()
+template <class T>
+void Menu<T>::mainMenuInterface()
 {
     system("cls");
     std::cout << " ----------------------MENU--------------------- \n";
@@ -74,7 +78,8 @@ void Menu::mainMenuInterface()
     std::cout << " ----------------------------------------------- \n";
 }
 
-void Menu::mainMenu()
+template <class T>
+void Menu<T>::mainMenu()
 {
    char option = '\0';
     do
@@ -103,7 +108,8 @@ void Menu::mainMenu()
     } while (option != '3');
 }
 
-void Menu::secondMenuInterface(std::string _nameMenu)
+template <class T>
+void Menu<T>::secondMenuInterface(std::string _nameMenu)
 {
     system("cls");
     std::cout << " ----------------- LOGIN MENU DE " << _nameMenu << " ---------------- \n";
@@ -114,9 +120,12 @@ void Menu::secondMenuInterface(std::string _nameMenu)
     std::cout << " ------------------------------------------------------- \n";
 }
 
-void Menu::secondMenu(User* _user)
+template <class T>
+void Menu<T>::secondMenu(T* _user)
 {
     char option = '\0';
+    std::string fileName = "";
+    std::string destinationPath = "";
     do
     {
         secondMenuInterface(_user->getName());
@@ -125,27 +134,39 @@ void Menu::secondMenu(User* _user)
         switch (option)
         {
         case '1':
-            // Inicializar Repositorio
-            std::cout << "Se inicializo\n";
+            // Inicializar Repositorio, se crean carpetas
+            std::cout << "Se inicializa\n";
+            // Se copia todos los archivos del repositorio local al area de trabajo
+            usersFile->createInitUserFolder(_user->getName());
+            // Pasar esos archivos
+
             break;
+
         case '2':
             // Crear archivo
-            std::cout << "Se Creo archivo\n";
+            std::cout << "Se Crea archivo\n";
+            std::cout << "Ingrese nombre del archivo sin(.txt) : ";
+            getline(std::cin, fileName);
+            usersFile->createFileUser(_user, fileName);
             break;
         case '3':
             // Clonar
             std::cout << "Se clono archivo\n";
+            std::cout << "A que ruta desea pasar su repositoprio Local : ";
+            getline(std::cin, destinationPath);
+            usersFile->cloneRepository(_user, destinationPath);
             break;
-        case '4': break;
+        case '4': return;
         default:
             std::cerr << "Opcion invalida\n\n";
             break;
         }
-        //system("pause>0");
+        system("pause>0");
     } while (option != '4');
 }
 
-void Menu::registerUser()
+template <class T>
+void Menu<T>::registerUser()
 {
     std::string _name = "", _passw = "", _email = "";
 
@@ -170,7 +191,7 @@ void Menu::registerUser()
         if(_name != "\0" && _passw != "\0" && _email != "\0")
             if(!existUser(listUser, _name, _passw)) // usuario no existente
             {
-                User* newUser = new User(_name, _passw, _email);
+                T* newUser = new T(_name, _passw, _email);
                 listUser->addFinal(newUser);
                 usersFile->writeFile(newUser->getName(), newUser->getPassword(), newUser->getEmail());
                 usersFile->createUserFolder(newUser->getName());
@@ -187,14 +208,15 @@ void Menu::registerUser()
     } while (anotherUser || (exitKey = getch()) != '3');
 }
 
-void Menu::loginUser()
+template <class T>
+void Menu<T>::loginUser()
 {
     std::string _name = "", _password = "";
     
     char keyPressed = '\0';
     char exitKey = '\0';
 
-    User* user = new User();
+    T* user = new T();
 
     unsigned int accountant = 0;
     bool valid = false;
@@ -260,7 +282,6 @@ void Menu::loginUser()
         
         // Se inicia las principales funciones
         system("pause>0");
-
 
         secondMenu(user); 
     }
