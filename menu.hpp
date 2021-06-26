@@ -61,14 +61,13 @@ public:
 
 
 };
-
+    
 template <class T>
 Menu<T>::Menu()
 {
     usersFile = new File<T>();
     listUser = new LinkedList<T*>();
     usersFile->loadFile(listUser);
-    
 }
 
 template <class T>

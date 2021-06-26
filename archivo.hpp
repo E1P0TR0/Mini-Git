@@ -30,6 +30,9 @@ public:
     File();
     ~File();
     void writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser);
+    // cargar archivos de cada usuario
+    void loadUserFiles(LinkedList<T*>* _list);
+    
     void loadFile(LinkedList<T*>* _list);
 
     // crear archivo como almacen para cada carpeta de usuario
@@ -46,6 +49,7 @@ public:
     void openFile(T* _user, std::string _nameFile);
     // Listar archivos
     void listFiles(T* _user);
+    
 };
 
 template <class T>
@@ -72,7 +76,35 @@ void File<T>::writeFile(std::string _nameUser, std::string _passwUser, std::stri
     outFile.close();
 }
 
-// validar información de archivo
+template <class T>
+void File<T>::loadUserFiles(LinkedList<T*>* _list)
+{
+    for(LinkedList<T*>::Iterator it = _list->beginIt(); it != _list->endIt(); ++it)
+    {
+        std::string infoLine = "", infoPart = "", cheapName = "", cheapDate = "";
+        T* currentData = *it;
+        std::string pathFile = GEN_FOLDER_NAME "/" + currentData->getName() + "/FilesData.txt";
+        std::ifstream inFile(pathFile, std::ios::in);
+        if(inFile.fail()) std::cout << MSG_ERROR;
+        else
+        {
+            while(std::getline(inFile, infoLine)) // Leemos lineas de archivo
+            {
+                std::stringstream data(infoLine);
+                std::getline(data, infoPart, '-');
+                cheapName = infoPart;
+                std::getline(data, infoPart, '-');
+                cheapDate = infoPart;
+
+                UserFile* file = new UserFile(cheapName, cheapDate); // por otro lado se crea la fecha de creacion
+                currentData->getStackFiles()->push(file);
+            }
+            inFile.close();
+        }
+    }
+}
+
+// validar información de archivo, leer info de usuario y archivos
 template <class T>
 void File<T>::loadFile(LinkedList<T*>* _list)
 {
@@ -109,6 +141,8 @@ void File<T>::loadFile(LinkedList<T*>* _list)
         }
         inFile.close();
     }
+    // CARGAR ARCHIVOS DE CADA USUARIO DE LA LSITA
+    loadUserFiles(_list);
 }
 
 // quizas mejor en otra clase (USUARIO)
@@ -152,8 +186,10 @@ void File<T>::createFileUser(T* _user, std::string _nameFile)
         std::cerr << MSG_ERROR;
     else
     {
-        std::cout << "\nArchivo creado correctamente\n";
-        _user->addFile(_nameFile);
+        std::cout << "\t\t\nArchivo creado correctamente !\n";
+        std::string cheapDate = _user->addFile(_nameFile);
+        outFile << _nameFile << " - " << cheapDate << "\n";
+        _user->writeFilesData(_nameFile, cheapDate); // volvemos a crear la pila de archi.
     }
     outFile.close();
 }
@@ -178,5 +214,7 @@ void File<T>::openFile(T* _user, std::string _nameFile)
     std::string command = pathFile + "\\" + _nameFile + ".txt";
     system(command.c_str());
 }
+
+
 
 #endif

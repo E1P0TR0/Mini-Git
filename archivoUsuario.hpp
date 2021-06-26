@@ -5,11 +5,14 @@
 #include <sstream>
 #include <ctime>
 
+
+
 class UserFile
 {
 private:
     std::string name;
     std::string creationDate;
+
 
     // agregar bool para el control de modificación
 public:
@@ -24,7 +27,12 @@ public:
 
         //while(std::getline(ss, part, ' '))
         //    std::cout << part << "\n";
+
+
     } 
+
+    UserFile(std::string _name, std::string _creationDate) : name(_name), creationDate(_creationDate) {}
+    
     ~UserFile() {}
 
     inline std::string getName() const { return this->name; }
