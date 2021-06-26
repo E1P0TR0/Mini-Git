@@ -153,7 +153,7 @@ void File<T>::createFileUser(T* _user, std::string _nameFile)
     else
     {
         std::cout << "\nArchivo creado correctamente\n";
-        _user->addFile(_nameFile, "asasas");
+        _user->addFile(_nameFile);
     }
     outFile.close();
 }

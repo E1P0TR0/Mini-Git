@@ -53,7 +53,7 @@ void Stack<T>::print()
         Node<T>* temp = top;
         while(temp != nullptr)
         {
-            std::cout << temp->data->getName() << "\n";
+            std::cout << temp->data->getName() << "\t - Creation Date : " << temp->data->getCreationDate() << "\n";
             temp = temp->next;
         }
     }

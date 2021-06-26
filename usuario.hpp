@@ -23,15 +23,15 @@ public:
     inline std::string getEmail() const { return this->email; }
   
 
-    void addFile(std::string _nameFile, std::string _creationDate);
+    void addFile(std::string _nameFile);
     void printFiles();
 };
 
 User::~User() {}
 
-void User::addFile(std::string _nameFile, std::string _creationDate)
+void User::addFile(std::string _nameFile)
 {
-    UserFile* file = new UserFile(_nameFile, _creationDate);
+    UserFile* file = new UserFile(_nameFile); // por otro lado se crea la fecha de creacion
     files->push(file); // ERRORRRRRR
 }
 
