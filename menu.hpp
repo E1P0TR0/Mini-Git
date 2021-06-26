@@ -19,14 +19,23 @@
 #include <conio.h>
 
 // problema con templates
-auto existUser = [](LinkedList<User*>* _list, std::string _name, std::string _passw)
+auto existUser = [](LinkedList<User*>* _list, std::string _name, std::string _passw, int type)
 {
     bool exist = true;
     for(LinkedList<User*>::Iterator it = _list->beginIt(); it != _list->endIt(); ++it)
     {
         User* currentData = *it;
-        if(currentData->getName() == _name || currentData->getPassword() == _passw)
-            return exist;
+        switch (type)
+        {
+        case 1:
+            if(currentData->getName() == _name || currentData->getPassword() == _passw)
+                return exist;
+            break;
+        case 2:
+            if(currentData->getName() == _name && currentData->getPassword() == _passw)
+                return exist;
+            break;
+        }
     }
     return !exist;
 };
@@ -36,7 +45,6 @@ class Menu
 {
 private:
     File<T>* usersFile;
-    // Cambiar a templates luego
     LinkedList<T*>* listUser;
 
 public:
@@ -50,6 +58,8 @@ public:
 
     void secondMenuInterface(std::string _nameMenu);
     void secondMenu(T* _user);
+
+
 };
 
 template <class T>
@@ -116,7 +126,13 @@ void Menu<T>::secondMenuInterface(std::string _nameMenu)
     std::cout << "|\t\t" << std::left << std::setw(32) << "1) Inicializar Repositorio." << "\t|\n";
     std::cout << "|\t\t" << std::left << std::setw(32) << "2) Crear archivo." << "\t|\n";
     std::cout << "|\t\t" << std::left << std::setw(32) << "3) Clonar Carpeta." << "\t|\n";
-    std::cout << "|\t\t" << std::left << std::setw(32) << "4) Menu Principal." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "4) Abrir archivo." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "5) Status." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "6) Add." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "7) Reset." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "8) Diff." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "9) commit." << "\t|\n";
+    std::cout << "|\t\t" << std::left << std::setw(32) << "0) Menu Principal." << "\t|\n";
     std::cout << " ------------------------------------------------------- \n";
 }
 
@@ -126,6 +142,7 @@ void Menu<T>::secondMenu(T* _user)
     char option = '\0';
     std::string fileName = "";
     std::string destinationPath = "";
+
     do
     {
         secondMenuInterface(_user->getName());
@@ -138,8 +155,7 @@ void Menu<T>::secondMenu(T* _user)
             std::cout << "Se inicializa\n";
             // Se copia todos los archivos del repositorio local al area de trabajo
             usersFile->createInitUserFolder(_user->getName());
-            // Pasar esos archivos
-
+            // Pasar esos archivos --^
             break;
 
         case '2':
@@ -149,6 +165,7 @@ void Menu<T>::secondMenu(T* _user)
             getline(std::cin, fileName);
             usersFile->createFileUser(_user, fileName);
             break;
+            
         case '3':
             // Clonar
             std::cout << "Se clono archivo\n";
@@ -156,13 +173,24 @@ void Menu<T>::secondMenu(T* _user)
             getline(std::cin, destinationPath);
             usersFile->cloneRepository(_user, destinationPath);
             break;
-        case '4': return;
+        case '4':
+            // Abrir x archivo
+            std::cout << "Lista de archivos :\n";
+            // Lista de archivos
+            _user->printFiles();
+            std::cout << "Ingrese el nombre del archivo sin(.txt) para abrir : ";
+            getline(std::cin, fileName);
+            // Se ingresa el nombre y procede 
+            usersFile->openFile(_user, fileName);
+            break;
+
+        case '0': return;
         default:
             std::cerr << "Opcion invalida\n\n";
             break;
         }
         system("pause>0");
-    } while (option != '4');
+    } while (option != '0');
 }
 
 template <class T>
@@ -189,7 +217,7 @@ void Menu<T>::registerUser()
 
 
         if(_name != "\0" && _passw != "\0" && _email != "\0")
-            if(!existUser(listUser, _name, _passw)) // usuario no existente
+            if(!existUser(listUser, _name, _passw, 1)) // usuario no existente
             {
                 T* newUser = new T(_name, _passw, _email);
                 listUser->addFinal(newUser);
@@ -254,7 +282,7 @@ void Menu<T>::loginUser()
         }
 
         // Validar datos en archivo .txt
-        if(existUser(listUser, _name, _password))
+        if(existUser(listUser, _name, _password, 2))
         {
             user = listUser->getElement(_name);
             valid = true;

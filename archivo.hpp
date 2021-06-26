@@ -8,8 +8,8 @@
 #define MSG_VALID "\n\t\t\tSE REGISTRO CORRECTAMENTE\n"
 
 #define REPOSITORY "Repositorio_Local"
-#define STATING_AREA "Area_de_Trabajo"
-#define WORKPLACE "Area_de_preparacion"
+#define STATING_AREA "Area_de_preparacion"
+#define WORKPLACE "Area_de_Trabajo"
 
 #include <iostream> //
 #include <fstream>
@@ -42,6 +42,10 @@ public:
     void createFileUser(T* _user, std::string _nameFile);
     // clonar carpeta de repositorio local a x ruta
     void cloneRepository(T* _user, std::string _destinationPath);
+    // abrir archivo
+    void openFile(T* _user, std::string _nameFile);
+    // Listar archivos
+    void listFiles(T* _user);
 };
 
 template <class T>
@@ -128,6 +132,14 @@ void File<T>::createInitUserFolder(std::string name)
     mkdir(pathStatingArea.c_str());
     std::string pathWorkPlace = pathFolder + "/" + WORKPLACE;
     mkdir(pathWorkPlace.c_str());
+
+    // pasar archivos a espacio de trabajo
+    // si se crean nuevos archivos
+    // la ruta cambia a la de area de trabajo
+    std::string pathFile = "c:\\Cuentas\\" + name + "\\" + REPOSITORY;
+    std::string newDestPath =  "c:\\Cuentas\\" + name + "\\" +  WORKPLACE;
+    std::string command = "XCOPY " + pathFile + " " + newDestPath + " " + "/E" + "/-Y";
+    system(command.c_str());
 }
 
 template <class T>
@@ -139,22 +151,32 @@ void File<T>::createFileUser(T* _user, std::string _nameFile)
     if(outFile.fail())
         std::cerr << MSG_ERROR;
     else
+    {
         std::cout << "\nArchivo creado correctamente\n";
+        _user->addFile(_nameFile, "asasas");
+    }
     outFile.close();
 }
 
-// CORREGIR
 template <class T>
 void File<T>::cloneRepository(T* _user, std::string _destPath)
 {
     // XCOPY c:\Cuentas\rosa c:\Users\Amelia\Desktop /E
     std::string pathFile = "c:\\Cuentas\\" + _user->getName() + "\\" + REPOSITORY;
-    std::string newDestPath =  _destPath + "\\" + REPOSITORY;
+    std::string newDestPath =  _destPath + "\\" + REPOSITORY + "-" + _user->getName();
     mkdir(newDestPath.c_str());
     std::string command = "XCOPY " + pathFile + " " + newDestPath + " " + "/E" + "/-Y";
     std::cout << "\n";
     system(command.c_str());
     std::cout << "\n\t\tClonacion terminada !\n";
+}
+
+template <class T>
+void File<T>::openFile(T* _user, std::string _nameFile)
+{
+    std::string pathFile = "c:\\Cuentas\\" + _user->getName() + "\\" + REPOSITORY;
+    std::string command = pathFile + "\\" + _nameFile + ".txt";
+    system(command.c_str());
 }
 
 #endif
