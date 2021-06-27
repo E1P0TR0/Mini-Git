@@ -177,7 +177,7 @@ void Menu<T>::secondMenu(T* _user)
             std::cout << "Lista de archivos :\n";
             // Lista de archivos
             _user->printFiles();
-            std::cout << "Ingrese el nombre del archivo sin(.txt) para abrir : ";
+            std::cout << "\nIngrese el nombre del archivo sin(.txt) para abrir : ";
             getline(std::cin, fileName);
             // Se ingresa el nombre y procede 
             usersFile->openFile(_user, fileName);
@@ -225,14 +225,15 @@ void Menu<T>::registerUser()
                 anotherUser = false;
             }
             else   
-                std::cout << "\t\t\nUsuario existente!\n\n";
+                std::cout << "\n\t\tUsuario existente!\n";
         else    
-            std::cout << "\t\t\nDatos invalidos, Vuelva a intentarlo...\n\n";
+            std::cout << "\n\t\tDatos invalidos, Vuelva a intentarlo...\n";
 
-        std::cin.ignore();
-
+        
         std::cout << "\n3) Volver.\n";
-    } while (anotherUser || (exitKey = getch()) != '3');
+        if((exitKey = getch()) == '3') return;
+
+    } while (anotherUser);
 }
 
 template <class T>

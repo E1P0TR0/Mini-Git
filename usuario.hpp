@@ -28,7 +28,7 @@ public:
     void printFiles();
 
     void writeFilesData(std::string _nameFile, std::string _cheapDate);
-    void loadFilesData(std::string _nameFile, std::string cheapDate);
+    // void loadFilesData(std::string _nameFile, std::string cheapDate);
 };
 
 User::~User() {}

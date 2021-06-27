@@ -31,7 +31,7 @@ public:
     ~File();
     void writeFile(std::string _nameUser, std::string _passwUser, std::string _emailUser);
     // cargar archivos de cada usuario
-    void loadUserFiles(LinkedList<T*>* _list);
+    void loadUserFiles(LinkedList<User*>* _list); // VERIFICAR PORQ NO DA CON TMPL
     
     void loadFile(LinkedList<T*>* _list);
 
@@ -77,12 +77,12 @@ void File<T>::writeFile(std::string _nameUser, std::string _passwUser, std::stri
 }
 
 template <class T>
-void File<T>::loadUserFiles(LinkedList<T*>* _list)
+void File<T>::loadUserFiles(LinkedList<User*>* _list)
 {
-    for(LinkedList<T*>::Iterator it = _list->beginIt(); it != _list->endIt(); ++it)
+    for(LinkedList<User*>::Iterator it = _list->beginIt(); it != _list->endIt(); ++it)
     {
         std::string infoLine = "", infoPart = "", cheapName = "", cheapDate = "";
-        T* currentData = *it;
+        User* currentData = *it;
         std::string pathFile = GEN_FOLDER_NAME "/" + currentData->getName() + "/FilesData.txt";
         std::ifstream inFile(pathFile, std::ios::in);
         if(inFile.fail()) std::cout << MSG_ERROR;
@@ -188,7 +188,7 @@ void File<T>::createFileUser(T* _user, std::string _nameFile)
     {
         std::cout << "\t\t\nArchivo creado correctamente !\n";
         std::string cheapDate = _user->addFile(_nameFile);
-        outFile << _nameFile << " - " << cheapDate << "\n";
+        outFile << _nameFile << " - " << cheapDate;
         _user->writeFilesData(_nameFile, cheapDate); // volvemos a crear la pila de archi.
     }
     outFile.close();
