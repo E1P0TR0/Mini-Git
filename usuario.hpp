@@ -14,6 +14,8 @@ private:
     std::string password;
     std::string email;
 
+    //bool isInit;
+
     Stack<UserFile*>* files;
 
 public:
@@ -29,6 +31,11 @@ public:
 
     void writeFilesData(std::string _nameFile, std::string _cheapDate);
     // void loadFilesData(std::string _nameFile, std::string cheapDate);
+
+    UserFile* getObjectByName(std::string _name) { return files->getByName(_name); }
+
+    // void setIsInit(bool _init) { this->isInit = _init; }
+    // bool getIsInit() const { return this->isInit; }
 };
 
 User::~User() {}

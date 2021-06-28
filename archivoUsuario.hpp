@@ -6,15 +6,19 @@
 #include <ctime>
 
 
-
 class UserFile
 {
 private:
     std::string name;
     std::string creationDate;
 
+    // agregar strings de contenido para el control de modificación
+    // Se tiene dos string, uno de info_Anterior y otra inf_actual, y con ello se valida la modif
+    std::string currentContent;
 
-    // agregar bool para el control de modificación
+    // Ubicación
+    std::string currentFolder; 
+
 public:
     UserFile(std::string _name = "") : name(_name)
     {
@@ -28,15 +32,38 @@ public:
         //while(std::getline(ss, part, ' '))
         //    std::cout << part << "\n";
 
+        // Contenido
+        currentContent = creationDate;
 
     } 
 
-    UserFile(std::string _name, std::string _creationDate) : name(_name), creationDate(_creationDate) {}
+    UserFile(std::string _name, std::string _creationDate, std::string _pathName) : name(_name), creationDate(_creationDate) 
+    {
+        // Actualizar contenido
+        std::string pathFileOther = GEN_FOLDER_NAME "/" + _pathName + "/" + REPOSITORY + "/" + _name + ".txt";
+        std::string line = "";
+
+        std::ifstream inFile(pathFileOther, std::ios::in);
+        if(inFile.fail()) std::cout << MSG_ERROR;
+        else
+            while(getline(inFile, line))
+                currentContent += line;
+
+        setCurrentContent(currentContent);
+        inFile.close();
+    }
     
     ~UserFile() {}
 
-    inline std::string getName() const { return this->name; }
-    inline std::string getCreationDate() const { return this->creationDate; }
+    void setName(std::string _name) { this->name = _name; }
+
+    std::string getName() const { return this->name; }
+    std::string getCreationDate() const { return this->creationDate; }
+
+    std::string getCurrentContent() const { return this->currentContent; }
+    void setCurrentContent(std::string _content) { this->currentContent = _content; }
+
+    std::string getCurrentFolder() const { return this->currentFolder; }
 
 };
 

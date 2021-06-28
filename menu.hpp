@@ -159,7 +159,7 @@ void Menu<T>::secondMenu(T* _user)
 
         case '2':
             // Crear archivo
-            std::cout << "Se Crea archivo\n";
+            // std::cout << "Se Crea archivo\n";
             std::cout << "Ingrese nombre del archivo sin(.txt) : ";
             getline(std::cin, fileName);
             usersFile->createFileUser(_user, fileName);
@@ -167,8 +167,8 @@ void Menu<T>::secondMenu(T* _user)
             
         case '3':
             // Clonar
-            std::cout << "Se clono archivo\n";
-            std::cout << "A que ruta desea pasar su repositoprio Local : ";
+            // std::cout << "Se clono archivo\n";
+            std::cout << "A que ruta desea pasar su repositorio Local : ";
             getline(std::cin, destinationPath);
             usersFile->cloneRepository(_user, destinationPath);
             break;
@@ -177,12 +177,23 @@ void Menu<T>::secondMenu(T* _user)
             std::cout << "Lista de archivos :\n";
             // Lista de archivos
             _user->printFiles();
-            std::cout << "\nIngrese el nombre del archivo sin(.txt) para abrir : ";
+            std::cout << "\nIngrese el nombre del archivo sin(.txt) para su modificacion : ";
             getline(std::cin, fileName);
             // Se ingresa el nombre y procede 
             usersFile->openFile(_user, fileName);
             break;
-
+        case '5':
+            // Listado de estado de archivos (modificados)
+            std::cout << "Estado de archivos : \n";
+            // Se muestra listado de archivos
+            _user->printFiles();
+            break;
+        case '6':
+            // Mover al area de preparación
+            std::cout << "Ingrese nombre de archivo sin(.txt) : ";
+            getline(std::cin, fileName);
+            usersFile->addFile(_user, fileName);
+            break;
         case '0': return;
         default:
             std::cerr << "Opcion invalida\n\n";

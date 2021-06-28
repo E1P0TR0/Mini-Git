@@ -18,6 +18,8 @@ public:
     void push(T element);
     T pop();
     void print();
+
+    T getByName(std::string _name);
 };
 
 template <class T>
@@ -56,6 +58,23 @@ void Stack<T>::print()
             std::cout << temp->data->getName() << "\t - Creation Date : " << temp->data->getCreationDate() << "\n";
             temp = temp->next;
         }
+    }
+}
+
+template <class T>
+T Stack<T>::getByName(std::string _name)
+{
+    if(itsEmpty()) return nullptr;
+    else
+    {
+        Node<T>* temp = top;
+        while(temp != nullptr)
+        {
+            if(temp->data->getName() == _name) 
+                return temp->data;
+            temp = temp->next;
+        }
+        return nullptr;
     }
 }
 
