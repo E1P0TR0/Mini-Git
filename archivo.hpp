@@ -49,6 +49,8 @@ public:
     void openFile(T* _user, std::string _nameFile);
     // Listar archivos
     void listFiles(T* _user);
+    // Agregar archivo area de preparación
+    void addFile(T* _user, std::string _nameFile);
     
 };
 
@@ -96,7 +98,7 @@ void File<T>::loadUserFiles(LinkedList<User*>* _list)
                 std::getline(data, infoPart, '-');
                 cheapDate = infoPart;
 
-                UserFile* file = new UserFile(cheapName, cheapDate); // por otro lado se crea la fecha de creacion
+                UserFile* file = new UserFile(cheapName, cheapDate, currentData->getName()); // por otro lado se crea la fecha de creacion
                 currentData->getStackFiles()->push(file);
             }
             inFile.close();
@@ -170,9 +172,9 @@ void File<T>::createInitUserFolder(std::string name)
     // pasar archivos a espacio de trabajo
     // si se crean nuevos archivos
     // la ruta cambia a la de area de trabajo
-    std::string pathFile = "c:\\Cuentas\\" + name + "\\" + REPOSITORY;
+    std::string pathFile = "c:\\Cuentas\\" + name + "\\" + REPOSITORY + "\\*.txt";
     std::string newDestPath =  "c:\\Cuentas\\" + name + "\\" +  WORKPLACE;
-    std::string command = "XCOPY " + pathFile + " " + newDestPath + " " + "/E" + "/-Y";
+    std::string command = "MOVE " + pathFile + " " + newDestPath;
     system(command.c_str());
 }
 
@@ -210,11 +212,54 @@ void File<T>::cloneRepository(T* _user, std::string _destPath)
 template <class T>
 void File<T>::openFile(T* _user, std::string _nameFile)
 {
-    std::string pathFile = "c:\\Cuentas\\" + _user->getName() + "\\" + REPOSITORY;
-    std::string command = pathFile + "\\" + _nameFile + ".txt";
-    system(command.c_str());
+    // Manera 1:
+    // std::string pathFile = "c:\\Cuentas\\" + _user->getName() + "\\" + REPOSITORY;
+    // std::string command = pathFile + "\\" + _nameFile + ".txt";
+    // system(command.c_str());
+
+    // PROBLEMA AL ABRIR, SE HACE UNA COPIA DEL ARCHIVO
+    std::string pathFileOther = GEN_FOLDER_NAME "/" + _user->getName() + "/" + REPOSITORY + "/" + _nameFile + ".txt";
+    // Manera 2:
+    std::string _cheapContent = "";
+    std::ofstream outFile(pathFileOther, std::ios::out | std::ios::app);
+    if(outFile.fail()) std::cout << MSG_ERROR;
+    else
+    {
+        std::cout << "\nIngrese contenido para el archivo : \n\n\t";
+        getline(std::cin, _cheapContent);
+        outFile << _cheapContent << "\n";
+
+        std::cout << "\n\nIngreso existoso!!!";
+    }
+    outFile.close();
+
+    // Abrir archivo para extraer contenido
+    std::string currentContent = "";
+    std::string line = "";
+
+    std::ifstream inFile(pathFileOther, std::ios::in | std::ios::out);
+    if(inFile.fail()) std::cout << MSG_ERROR;
+    else
+        while(getline(inFile, line))
+            currentContent += line;
+    inFile.close();
+
+    // Comparación
+    if((_user->getObjectByName(_nameFile)->getCurrentContent()).compare(currentContent) != 0)
+    {
+        std::string _newName = _nameFile + " - Modificado";
+        _user->getObjectByName(_nameFile)->setName(_newName);
+        _user->getObjectByName(_newName)->setCurrentContent(currentContent);        
+    }
 }
 
-
+template <class T>
+void File<T>::addFile(T* _user, std::string _nameFile)
+{
+    std::string pathFile = "c:\\Cuentas\\" + _user->getName() + "\\" + WORKPLACE + "\\" + _nameFile + ".txt";
+    std::string newDestPath =  "c:\\Cuentas\\" + _user->getName() + "\\" +  STATING_AREA;
+    std::string command = "MOVE " + pathFile + " " + newDestPath;
+    system(command.c_str());
+}
 
 #endif
